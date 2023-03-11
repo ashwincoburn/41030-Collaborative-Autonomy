@@ -1,0 +1,2 @@
+- setup-file:
+    local-name: /home/arcbash/catkin_ws/src/collaborative_autonomy/build/devel/setup.sh
