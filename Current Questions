@@ -1,0 +1,15 @@
+Essential:
+Finding out commands to subscribe and process data from topics
+Finding out commands to send 
+If I type control+C on the terminal, will it exit cleanly? Other was to exit cleanly
+DO I have to get a new map everytime between tests?
+
+Stretch:
+linking github package to catkin_ws on ubuntu to easier work between pcs
+
+search in the node for localisation
+AMCL
+2D Nav goal RViz
+topic localisation
+find out what the opic/data recieved from when you click 2d
+
