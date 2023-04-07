@@ -1,4 +1,4 @@
-prefix=/home/arcbash/git/41030-Collaborative-Autonomy/catkin_ws/install
+prefix=/home/arcbash/catkin_ws/install
 
 Name: collaborative_autonomy
 Description: Description of collaborative_autonomy

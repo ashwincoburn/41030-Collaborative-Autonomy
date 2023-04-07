@@ -1,8 +1,8 @@
-# Install script for directory: /home/arcbash/git/41030-Collaborative-Autonomy/catkin_ws/src/collaborative_autonomy
+# Install script for directory: /home/arcbash/catkin_ws/src/collaborative_autonomy
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
-  set(CMAKE_INSTALL_PREFIX "/home/arcbash/git/41030-Collaborative-Autonomy/catkin_ws/install")
+  set(CMAKE_INSTALL_PREFIX "/home/arcbash/catkin_ws/install")
 endif()
 string(REGEX REPLACE "/$" "" CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
 
@@ -38,17 +38,17 @@ if(NOT DEFINED CMAKE_CROSSCOMPILING)
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig" TYPE FILE FILES "/home/arcbash/git/41030-Collaborative-Autonomy/catkin_ws/build/collaborative_autonomy/catkin_generated/installspace/collaborative_autonomy.pc")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig" TYPE FILE FILES "/home/arcbash/catkin_ws/build/collaborative_autonomy/catkin_generated/installspace/collaborative_autonomy.pc")
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
   file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/collaborative_autonomy/cmake" TYPE FILE FILES
-    "/home/arcbash/git/41030-Collaborative-Autonomy/catkin_ws/build/collaborative_autonomy/catkin_generated/installspace/collaborative_autonomyConfig.cmake"
-    "/home/arcbash/git/41030-Collaborative-Autonomy/catkin_ws/build/collaborative_autonomy/catkin_generated/installspace/collaborative_autonomyConfig-version.cmake"
+    "/home/arcbash/catkin_ws/build/collaborative_autonomy/catkin_generated/installspace/collaborative_autonomyConfig.cmake"
+    "/home/arcbash/catkin_ws/build/collaborative_autonomy/catkin_generated/installspace/collaborative_autonomyConfig-version.cmake"
     )
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/collaborative_autonomy" TYPE FILE FILES "/home/arcbash/git/41030-Collaborative-Autonomy/catkin_ws/src/collaborative_autonomy/package.xml")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/collaborative_autonomy" TYPE FILE FILES "/home/arcbash/catkin_ws/src/collaborative_autonomy/package.xml")
 endif()
 

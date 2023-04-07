@@ -60,6 +60,43 @@ CMAKE_SOURCE_DIR = /home/arcbash/catkin_ws/src/collaborative_autonomy
 CMAKE_BINARY_DIR = /home/arcbash/catkin_ws/src/collaborative_autonomy/build
 
 #=============================================================================
+# Target rules for target CMakeFiles/nav_test.dir
+
+# All Build rule for target.
+CMakeFiles/nav_test.dir/all:
+	$(MAKE) -f CMakeFiles/nav_test.dir/build.make CMakeFiles/nav_test.dir/depend
+	$(MAKE) -f CMakeFiles/nav_test.dir/build.make CMakeFiles/nav_test.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/arcbash/catkin_ws/src/collaborative_autonomy/build/CMakeFiles --progress-num=12,13 "Built target nav_test"
+.PHONY : CMakeFiles/nav_test.dir/all
+
+# Include target in all.
+all: CMakeFiles/nav_test.dir/all
+
+.PHONY : all
+
+# Build rule for subdir invocation for target.
+CMakeFiles/nav_test.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/arcbash/catkin_ws/src/collaborative_autonomy/build/CMakeFiles 2
+	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/nav_test.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/arcbash/catkin_ws/src/collaborative_autonomy/build/CMakeFiles 0
+.PHONY : CMakeFiles/nav_test.dir/rule
+
+# Convenience name for target.
+nav_test: CMakeFiles/nav_test.dir/rule
+
+.PHONY : nav_test
+
+# clean rule for target.
+CMakeFiles/nav_test.dir/clean:
+	$(MAKE) -f CMakeFiles/nav_test.dir/build.make CMakeFiles/nav_test.dir/clean
+.PHONY : CMakeFiles/nav_test.dir/clean
+
+# clean rule for target.
+clean: CMakeFiles/nav_test.dir/clean
+
+.PHONY : clean
+
+#=============================================================================
 # Target rules for target CMakeFiles/geometry_msgs_generate_messages_py.dir
 
 # All Build rule for target.

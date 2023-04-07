@@ -1,6 +1,7 @@
 /home/arcbash/catkin_ws/src/collaborative_autonomy/build/CMakeFiles/install/strip.dir
 /home/arcbash/catkin_ws/src/collaborative_autonomy/build/CMakeFiles/list_install_components.dir
 /home/arcbash/catkin_ws/src/collaborative_autonomy/build/CMakeFiles/edit_cache.dir
+/home/arcbash/catkin_ws/src/collaborative_autonomy/build/CMakeFiles/nav_test.dir
 /home/arcbash/catkin_ws/src/collaborative_autonomy/build/CMakeFiles/geometry_msgs_generate_messages_py.dir
 /home/arcbash/catkin_ws/src/collaborative_autonomy/build/CMakeFiles/geometry_msgs_generate_messages_lisp.dir
 /home/arcbash/catkin_ws/src/collaborative_autonomy/build/CMakeFiles/geometry_msgs_generate_messages_cpp.dir

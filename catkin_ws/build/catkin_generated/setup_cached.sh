@@ -7,7 +7,4 @@
 # new environment variables
 
 # modified environment variables
-export CMAKE_PREFIX_PATH="/home/arcbash/git/41030-Collaborative-Autonomy/catkin_ws/devel:$CMAKE_PREFIX_PATH"
-export PWD='/home/arcbash/git/41030-Collaborative-Autonomy/catkin_ws/build'
-export ROSLISP_PACKAGE_DIRECTORIES="/home/arcbash/git/41030-Collaborative-Autonomy/catkin_ws/devel/share/common-lisp:$ROSLISP_PACKAGE_DIRECTORIES"
-export ROS_PACKAGE_PATH="/home/arcbash/git/41030-Collaborative-Autonomy/catkin_ws/src:$ROS_PACKAGE_PATH"
+export PWD='/home/arcbash/catkin_ws/build'

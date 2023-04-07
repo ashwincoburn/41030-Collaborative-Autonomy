@@ -168,6 +168,19 @@ depend:
 .PHONY : depend
 
 #=============================================================================
+# Target rules for targets named nav_test
+
+# Build rule for target.
+nav_test: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 nav_test
+.PHONY : nav_test
+
+# fast build rule for target.
+nav_test/fast:
+	$(MAKE) -f CMakeFiles/nav_test.dir/build.make CMakeFiles/nav_test.dir/build
+.PHONY : nav_test/fast
+
+#=============================================================================
 # Target rules for targets named geometry_msgs_generate_messages_py
 
 # Build rule for target.
@@ -752,6 +765,33 @@ gtest/fast:
 	$(MAKE) -f gtest/googlemock/gtest/CMakeFiles/gtest.dir/build.make gtest/googlemock/gtest/CMakeFiles/gtest.dir/build
 .PHONY : gtest/fast
 
+src/nav_test.o: src/nav_test.cpp.o
+
+.PHONY : src/nav_test.o
+
+# target to build an object file
+src/nav_test.cpp.o:
+	$(MAKE) -f CMakeFiles/nav_test.dir/build.make CMakeFiles/nav_test.dir/src/nav_test.cpp.o
+.PHONY : src/nav_test.cpp.o
+
+src/nav_test.i: src/nav_test.cpp.i
+
+.PHONY : src/nav_test.i
+
+# target to preprocess a source file
+src/nav_test.cpp.i:
+	$(MAKE) -f CMakeFiles/nav_test.dir/build.make CMakeFiles/nav_test.dir/src/nav_test.cpp.i
+.PHONY : src/nav_test.cpp.i
+
+src/nav_test.s: src/nav_test.cpp.s
+
+.PHONY : src/nav_test.s
+
+# target to generate assembly for a file
+src/nav_test.cpp.s:
+	$(MAKE) -f CMakeFiles/nav_test.dir/build.make CMakeFiles/nav_test.dir/src/nav_test.cpp.s
+.PHONY : src/nav_test.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -761,6 +801,7 @@ help:
 	@echo "... install/strip"
 	@echo "... list_install_components"
 	@echo "... edit_cache"
+	@echo "... nav_test"
 	@echo "... geometry_msgs_generate_messages_py"
 	@echo "... geometry_msgs_generate_messages_lisp"
 	@echo "... geometry_msgs_generate_messages_cpp"
@@ -810,6 +851,9 @@ help:
 	@echo "... gmock"
 	@echo "... gtest_main"
 	@echo "... gtest"
+	@echo "... src/nav_test.o"
+	@echo "... src/nav_test.i"
+	@echo "... src/nav_test.s"
 .PHONY : help
 
 
