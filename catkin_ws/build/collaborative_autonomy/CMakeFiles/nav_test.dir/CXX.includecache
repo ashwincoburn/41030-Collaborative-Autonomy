@@ -17,8 +17,6 @@ tf2/LinearMath/Quaternion.h
 -
 tf2_geometry_msgs/tf2_geometry_msgs.h
 -
-vector
--
 
 /opt/ros/melodic/include/actionlib/action_definition.h
 

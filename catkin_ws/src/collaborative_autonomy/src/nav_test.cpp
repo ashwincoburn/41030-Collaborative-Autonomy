@@ -3,12 +3,171 @@
 #include <actionlib/client/simple_action_client.h>
 #include <tf2/LinearMath/Quaternion.h>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
-#include <vector>
 
 typedef actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction> MoveBaseClient;
 using namespace std;
 
 /* This is designed to repeatedly drive a singular TB3 to four corners of the map */
+
+int main(int argc, char** argv){
+
+  ros::init(argc, argv, "nav_test");
+  ROS_INFO_STREAM("STARTING nav_test...");
+  ROS_INFO_STREAM("STARTING nav_test...");
+  ROS_INFO_STREAM("STARTING nav_test...");
+
+  /* (Optional) Start all the required packages and nodes using senario1.launch file */
+  // look at how turtlebot3_navigation.launch does things, especially for amcl.launch
+
+  /* Tell the action client(ac) that we want to spin a thread by default */
+  //Connects to move_base action client created by move_base node
+  //Allows us to know when goal is reached
+  MoveBaseClient ac("move_base", true); 
+
+  /* Wait for the action server to come up */
+  while(!ac.waitForServer(ros::Duration(5.0))){
+    ROS_INFO_STREAM("Waiting for the move_base action server to come up");
+  }
+
+  /* Define the vector of goals */
+  vector<move_base_msgs::MoveBaseGoal> goals;
+  move_base_msgs::MoveBaseGoal pointToAdd;
+  tf2::Quaternion myQuaternion;
+  vector<double> goalPose;
+
+  //Goal 0, Bottom Left, 90 degs
+  pointToAdd.target_pose.pose.position.x = -1.55; 
+  pointToAdd.target_pose.pose.position.y = 1.5; 
+  pointToAdd.target_pose.pose.position.z = 0.0;
+  myQuaternion.setRPY(0,0,90*(180/M_PI));
+  pointToAdd.target_pose.pose.orientation.x = myQuaternion.getX();
+  pointToAdd.target_pose.pose.orientation.y = myQuaternion.getY();
+  pointToAdd.target_pose.pose.orientation.z = myQuaternion.getZ();
+  pointToAdd.target_pose.pose.orientation.w = myQuaternion.getW();
+  pointToAdd.target_pose.header.frame_id = "map"; //Global Frame, base_link is local I think, passes onto other goals
+  goals.push_back(pointToAdd);
+  goalPose.push_back(90);
+  //Goal 1, Top Left, 0 degs
+  pointToAdd.target_pose.pose.position.x = 1.45; 
+  pointToAdd.target_pose.pose.position.y = 1.6; 
+  pointToAdd.target_pose.pose.position.z = 0.0;
+  myQuaternion.setRPY(0,0,0*(180/M_PI));
+  pointToAdd.target_pose.pose.orientation.x = myQuaternion.getX();
+  pointToAdd.target_pose.pose.orientation.y = myQuaternion.getY();
+  pointToAdd.target_pose.pose.orientation.z = myQuaternion.getZ();
+  pointToAdd.target_pose.pose.orientation.w = myQuaternion.getW();
+  goals.push_back(pointToAdd);
+  goalPose.push_back(0);
+  //Goal 2, Top Right, -90 degs
+  pointToAdd.target_pose.pose.position.x = 1.45; 
+  pointToAdd.target_pose.pose.position.y = -1.6; 
+  pointToAdd.target_pose.pose.position.z = 0.0;
+  myQuaternion.setRPY(0,0,-90*(180/M_PI));
+  pointToAdd.target_pose.pose.orientation.x = myQuaternion.getX();
+  pointToAdd.target_pose.pose.orientation.y = myQuaternion.getY();
+  pointToAdd.target_pose.pose.orientation.z = myQuaternion.getZ();
+  pointToAdd.target_pose.pose.orientation.w = myQuaternion.getW();
+  goals.push_back(pointToAdd);
+  goalPose.push_back(-90);
+  //Goal 3, Bottom Right, -180 degs
+  pointToAdd.target_pose.pose.position.x = -1.55; 
+  pointToAdd.target_pose.pose.position.y = -1.5; 
+  pointToAdd.target_pose.pose.position.z = 0.0;
+  myQuaternion.setRPY(0,0,-179*(180/M_PI));
+  pointToAdd.target_pose.pose.orientation.x = myQuaternion.getX();
+  pointToAdd.target_pose.pose.orientation.y = myQuaternion.getY();
+  pointToAdd.target_pose.pose.orientation.z = myQuaternion.getZ();
+  pointToAdd.target_pose.pose.orientation.w = myQuaternion.getW();
+  goals.push_back(pointToAdd);
+  goalPose.push_back(-179);
+
+  /* Loop Goals */
+  unsigned int headerSequencer = 0;
+  unsigned short currentGoal = 0;
+
+  while(ros::ok()){
+ 
+    headerSequencer += 1;
+    goals.at(currentGoal).target_pose.header.seq = headerSequencer;
+    goals.at(currentGoal).target_pose.header.stamp = ros::Time::now();
+
+    ac.sendGoal(goals.at(currentGoal));
+    ROS_INFO_STREAM("Travelling Towards Goal " << currentGoal << " with YAW " << goalPose.at(currentGoal));
+
+    ac.waitForResult();
+
+    if(ac.getState() == actionlib::SimpleClientGoalState::SUCCEEDED){
+      ROS_INFO_STREAM("Goal " << currentGoal << " Reached!");
+    } else {
+      ROS_INFO_STREAM("ERROR: Failed to Reach Goal, BREAKING THE LOOP");
+      break;
+    }
+
+    if(currentGoal < goals.size() - 1){
+      currentGoal += 1;
+    } else {currentGoal = 0;}
+    ROS_INFO_STREAM("New currentGoal = " << currentGoal << " for goals.size() = " << goals.size());
+  }
+
+  return 0;
+}
+
+  // Values in .launch for multi
+  // <arg name="first_tb3_x_pos" default="-2.0"/>
+  // <arg name="first_tb3_y_pos" default=" -0.5"/>
+  // <arg name="first_tb3_z_pos" default=" 0.0"/>
+  // <arg name="first_tb3_yaw"   default=" 0.0"/>
+
+  // <arg name="second_tb3_x_pos" default=" 2.0"/>
+  // <arg name="second_tb3_y_pos" default=" 0.5"/>
+  // <arg name="second_tb3_z_pos" default=" 0.0"/>
+  // <arg name="second_tb3_yaw"   default=" 0.0"/>
+
+/*
+     if(currentGoal == 1){
+      //Goal 1 [Bottom Left]:
+      // X: -1.55, Y: 1.5, YAW = 1.5567947 or roughly 90 degs //Facing Left
+      goalToSend.target_pose.pose.position.x = -1.5;
+      goalToSend.target_pose.pose.position.y = 1.6;
+      myQuaternion.setRPY(0,0,45*(180/M_PI));
+      goalToSend.target_pose.pose.orientation.z = myQuaternion.z(); //0.7021392
+      goalToSend.target_pose.pose.orientation.w = myQuaternion.w(); //0.7120397
+      currentGoal = 2;
+      ROS_INFO("Goal 1 SET");
+    } else if (currentGoal == 2){
+      //Goal 2 [Top Left]:
+      // X: 1.45, Y: 1.6, YAW = 0 //Facing up
+      goalToSend.target_pose.pose.position.x = 1.5;
+      goalToSend.target_pose.pose.position.y = 1.6;
+      myQuaternion.setRPY(0,0,-45*(180/M_PI));
+      goalToSend.target_pose.pose.orientation.z = myQuaternion.z(); //0.0
+      goalToSend.target_pose.pose.orientation.w = myQuaternion.w(); //0.0
+      currentGoal = 3;
+      ROS_INFO("Goal 2 SET");
+    } else if (currentGoal == 3){
+      //Goal 3 [Top Right]:
+      // X: 1.45, Y: -1.6, YAW: -1.4911555 or roughly -90 degs //Facing Right
+      goalToSend.target_pose.pose.position.x = 1.5;
+      goalToSend.target_pose.pose.position.y = -1.6;
+      myQuaternion.setRPY(0,0,-135*(180/M_PI));
+      goalToSend.target_pose.pose.orientation.z = myQuaternion.z(); //-0.6783964
+      goalToSend.target_pose.pose.orientation.w = myQuaternion.w(); //0.7346961
+      currentGoal = 4;
+      ROS_INFO("Goal 3 SET");
+    } else {
+      //Goal 4 [Bottom Right]:
+      // X: -1.55, Y: -1.5, YAW: -3.1415927 or roughly -180 degs //Facing Down
+      goalToSend.target_pose.pose.position.x = -1.5;
+      goalToSend.target_pose.pose.position.y = -1.6;
+      // goalToSend.target_pose.pose.orientation.z = -1;
+      // goalToSend.target_pose.pose.orientation.w = 0.0;
+      myQuaternion.setRPY(0,0,135*(180/M_PI));
+      goalToSend.target_pose.pose.orientation.z = myQuaternion.z(); //-1.0
+      goalToSend.target_pose.pose.orientation.w = myQuaternion.w(); //0.0
+      currentGoal = 1;
+      ROS_INFO("Goal 4 SET");
+    }
+*/
 
 /* To get this to work I'm running from the following given packages:
 TURTLEBOT3:
@@ -79,6 +238,7 @@ which uses a particle filter to track the pose of a robot against a known map.
       This is useful when move_base has its costmaps stopped for a long period of time and then started again in a new location in the environment.
     - ~clear_costmaps (std_srvs/Empty): Allows an external user to tell move_base to clear obstacles in the costmaps used by move_base. 
       This could cause a robot to hit things and should be used with caution.
+*/
 
 /* Planner */
 //turtlebot3_fake.h has all the values like max angular rotation and stuff
@@ -86,103 +246,3 @@ which uses a particle filter to track the pose of a robot against a known map.
 /* AMCL (localisation) & Gmapping (map building) */
 // Can be tweaked by modifying parameters on launch/includes/_amcl.launch file 
 // and launch/includes/_gmapping.launch
-
-int main(int argc, char** argv){
-  ros::init(argc, argv, "nav_test"); //Should also start roscore?
-  ROS_INFO("Starting nav_test...");
-
-  //FUTURE: /* Start all the required packages and nodes here */
-  // look at how turtlebot3_navigation.launch does things, especially for amcl.launch
-  // Will likely have to be done as a seperate launch file
-
-  /* Tell the action client(ac) that we want to spin a thread by default */
-  MoveBaseClient ac("move_base", true); //Creates some sort of link to the move_base node
-
-  //wait for the action server to come up
-  while(!ac.waitForServer(ros::Duration(5.0))){
-    ROS_INFO("Waiting for the move_base action server to come up");
-  }
-
-  move_base_msgs::MoveBaseGoal goalToSend;
-  unsigned int headerSequencer = 0;
-  unsigned short currentGoal = 1;
-  goalToSend.target_pose.pose.orientation.y = 0.0;
-  goalToSend.target_pose.pose.orientation.x = 0.0;
-
-  while(1){
-    if(currentGoal == 1){
-      //Goal 1 [Bottom Left]:
-      // X: -1.55, Y: 1.5, YAW = 1.5567947 or roughly 90 degs //Facing Left
-      goalToSend.target_pose.pose.position.x = -1.5;
-      goalToSend.target_pose.pose.position.y = 1.6;
-      goalToSend.target_pose.pose.orientation.z = 0.7021392;
-      goalToSend.target_pose.pose.orientation.w = 0.7120397;
-      currentGoal = 2;
-      ROS_INFO("Goal 1 SET");
-    } else if (currentGoal == 2){
-      //Goal 2 [Top Left]:
-      // X: 1.45, Y: 1.6, YAW = 0 //Facing up
-      goalToSend.target_pose.pose.position.x = 1.5;
-      goalToSend.target_pose.pose.position.y = 1.6;
-      goalToSend.target_pose.pose.orientation.z = 0.0;
-      goalToSend.target_pose.pose.orientation.w = 0.0;
-      currentGoal = 3;
-      ROS_INFO("Goal 2 SET");
-    } else if (currentGoal == 3){
-      //Goal 3 [Top Right]:
-      // X: 1.45, Y: -1.6, YAW: -1.4911555 or roughly -90 degs //Facing Right
-      goalToSend.target_pose.pose.position.x = 1.5;
-      goalToSend.target_pose.pose.position.y = -1.6;
-      goalToSend.target_pose.pose.orientation.z = -0.6783964;
-      goalToSend.target_pose.pose.orientation.w = 0.7346961;
-      currentGoal = 4;
-      ROS_INFO("Goal 3 SET");
-    } else {
-      //Goal 4 [Bottom Right]:
-      // X: -1.55, Y: -1.5, YAW: -3.1415927 or roughly -180 degs //Facing Down
-      goalToSend.target_pose.pose.position.x = -1.5;
-      goalToSend.target_pose.pose.position.y = -1.6;
-      goalToSend.target_pose.pose.orientation.z = -1;
-      goalToSend.target_pose.pose.orientation.w = 0.0;
-      currentGoal = 1;
-      ROS_INFO("Goal 4 SET");
-    }
-
-    headerSequencer += 1;
-    goalToSend.target_pose.header.seq = headerSequencer;
-    goalToSend.target_pose.header.frame_id = "base_link"; //I think this is the only one on turtlebot
-    goalToSend.target_pose.header.stamp = ros::Time::now();
-
-    ROS_INFO("Sending goal...");
-    ac.sendGoal(goalToSend);
-
-    ac.waitForResult();
-
-    if(ac.getState() == actionlib::SimpleClientGoalState::SUCCEEDED){
-      ROS_DEBUG_STREAM_COND(currentGoal != 0, "Goal " << currentGoal << " Reached!"); //Should always print Goal Value
-    } else {
-      ROS_INFO("ERROR: Failed to Reach Goal, BREAKING THE LOOP");
-      break;
-    }
-  }
-
-  return 0;
-}
-
-  // Values in .launch for multi
-  // <arg name="first_tb3_x_pos" default="-2.0"/>
-  // <arg name="first_tb3_y_pos" default=" -0.5"/>
-  // <arg name="first_tb3_z_pos" default=" 0.0"/>
-  // <arg name="first_tb3_yaw"   default=" 0.0"/>
-
-  // <arg name="second_tb3_x_pos" default=" 2.0"/>
-  // <arg name="second_tb3_y_pos" default=" 0.5"/>
-  // <arg name="second_tb3_z_pos" default=" 0.0"/>
-  // <arg name="second_tb3_yaw"   default=" 0.0"/>
-
-
-    // Look for old files on transforms TF2
-  // goal.target_pose.pose.orientation.x = myQuaternion.getX();
-  // goal.target_pose.pose.orientation.y = myQuaternion.getY();
-  // goal.target_pose.pose.orientation.z = myQuaternion.getZ();
-  // goal.target_pose.pose.orientation.w = myQuaternion.getW();

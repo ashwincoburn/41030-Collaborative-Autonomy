@@ -1,0 +1,15 @@
+<launch>
+
+  <!-- Launch Gazebo World for Single TB3 -->
+  <include file="$(find turtlebot3_gazebo)/launch/turtlebot3_world.launch">
+  </include>
+
+  <!-- Launch TB3 Navigation -->
+  <include file="$(find turtlebot3_navigation)/launch/sen1_turtlebot3_navigation.launch">
+    <arg name="map_file" value="$(find collaborative_autonomy)/maps/map.yaml" />
+  </include>
+
+  <!-- Launch nav_test (Four-points Repeating) for Single TB3 [Same as rosrun] [Seperate Terminal] -->
+  <node name="nav_test" pkg="collaborative_autonomy"  type="nav_test" output="screen" launch-prefix="gnome-terminal --command"/>
+
+</launch>
