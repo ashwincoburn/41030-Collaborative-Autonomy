@@ -211,3 +211,9 @@ include_directories(
 #executables
 add_executable(nav_test src/nav_test.cpp)
 target_link_libraries(nav_test ${catkin_LIBRARIES})
+
+add_executable(nav_sen2_leader src/nav_sen2_leader.cpp)
+target_link_libraries(nav_sen2_leader ${catkin_LIBRARIES})
+
+add_executable(nav_sen2_chaser src/nav_sen2_chaser.cpp)
+target_link_libraries(nav_sen2_chaser ${catkin_LIBRARIES})

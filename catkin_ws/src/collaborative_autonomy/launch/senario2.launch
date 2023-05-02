@@ -1,0 +1,18 @@
+<launch>
+
+  <!-- Launch Gazebo World for Both TB3s -->
+  <include file="$(find turtlebot3_gazebo)/launch/sen2_multi_turtlebot3.launch">
+  </include>
+
+  <!-- Launch AMCL Navigation for Both TB3s -->
+  <include file="$(find turtlebot3_navigation)/launch/sen2_turtlebot3_navigation.launch">
+    <arg name="map_file" value="$(find collaborative_autonomy)/maps/map.yaml" />
+  </include>
+
+  <!-- Launch LEADER Script (Four-points Repeating) for Single TB3 [Same as rosrun] [Seperate Terminal] -->
+  <node name="nav_sen2_leader" pkg="collaborative_autonomy"  type="nav_sen2_leader" output="screen" launch-prefix="gnome-terminal --command"/>
+
+  <!-- Launch CHASER Script (chase leader) for Single TB3 [Same as rosrun] [Seperate Terminal] -->
+  <node name="nav_sen2_chaser" pkg="collaborative_autonomy"  type="nav_sen2_chaser" output="screen" launch-prefix="gnome-terminal --command"/>
+
+</launch>

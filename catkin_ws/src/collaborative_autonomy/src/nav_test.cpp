@@ -13,14 +13,12 @@ int main(int argc, char** argv){
 
   ros::init(argc, argv, "nav_test");
   ROS_INFO_STREAM("STARTING nav_test...");
-  ROS_INFO_STREAM("STARTING nav_test...");
-  ROS_INFO_STREAM("STARTING nav_test...");
 
   /* (Optional) Start all the required packages and nodes using senario1.launch file */
   // look at how turtlebot3_navigation.launch does things, especially for amcl.launch
 
   /* Tell the action client(ac) that we want to spin a thread by default */
-  //Connects to move_base action client created by move_base node
+  //Connects to move_base action client created by move_base node in amcl package
   //Allows us to know when goal is reached
   MoveBaseClient ac("move_base", true); 
 
