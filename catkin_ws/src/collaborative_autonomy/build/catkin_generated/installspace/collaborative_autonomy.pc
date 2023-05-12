@@ -1,8 +1,0 @@
-prefix=/usr/local
-
-Name: collaborative_autonomy
-Description: Description of collaborative_autonomy
-Version: 0.0.0
-Cflags: 
-Libs: -L${prefix}/lib 
-Requires: 
