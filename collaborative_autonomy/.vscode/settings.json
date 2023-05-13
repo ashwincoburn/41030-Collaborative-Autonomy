@@ -8,6 +8,7 @@
         "/opt/ros/melodic/lib/python2.7/dist-packages"
     ],
     "files.associations": {
-        "tuple": "cpp"
+        "tuple": "cpp",
+        "chrono": "cpp"
     }
 }

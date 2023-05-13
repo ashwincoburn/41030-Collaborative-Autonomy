@@ -1,0 +1,9 @@
+<!-- 
+    Check out package http://wiki.ros.org/multirobot_map_merge and multi_map_merge.launch file in turtlebot3_gazebo package
+    Senario 3: 
+    Leader and Follower
+    House map, Leader is continuously moving
+    Follower shares the same map and is chasing Leader
+    both running SLAM with no preset map, both sharing map
+
+ -->

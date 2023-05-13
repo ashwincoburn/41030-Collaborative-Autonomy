@@ -1,18 +1,33 @@
 <launch>
+  <!-- Arguments for this Launch File, defaults intended to be used -->
+  <arg name="first_tb3_x_pos" default="-2.0"/>
+  <arg name="first_tb3_y_pos" default=" -0.5"/>
+  <arg name="second_tb3_x_pos" default=" 2.0"/>
+  <arg name="second_tb3_y_pos" default=" 0.5"/>
 
-  <!-- Launch Gazebo World for Both TB3s -->
-  <include file="$(find turtlebot3_gazebo)/launch/sen2_multi_turtlebot3.launch">
+  <!-- Launch Gazebo World and Spawn Both TB3s -->
+  <include file="$(find collaborative_autonomy)/launch/gazebo/sen2_multi_turtlebot3.launch">
+    <arg name="first_tb3_x_pos" value="$(arg first_tb3_x_pos)"/>
+    <arg name="first_tb3_y_pos" value="$(arg first_tb3_y_pos)"/>
+    <arg name="second_tb3_x_pos" value="$(arg second_tb3_x_pos)"/>
+    <arg name="second_tb3_y_pos" value="$(arg second_tb3_y_pos)"/>
   </include>
 
-  <!-- Launch AMCL Navigation for Both TB3s -->
-  <include file="$(find turtlebot3_navigation)/launch/sen2_turtlebot3_navigation.launch">
+  <!-- Launch Navigation for Both TB3s -->
+  <include file="$(find collaborative_autonomy)/launch/navigation/sen2_turtlebot3_navigation.launch">
     <arg name="map_file" value="$(find collaborative_autonomy)/maps/map.yaml" />
+    <arg name="first_tb3_x_pos" value="$(arg first_tb3_x_pos)"/>
+    <arg name="first_tb3_y_pos" value="$(arg first_tb3_y_pos)"/>
+    <arg name="second_tb3_x_pos" value="$(arg second_tb3_x_pos)"/>
+    <arg name="second_tb3_y_pos" value="$(arg second_tb3_y_pos)"/>
   </include>
 
-  <!-- Launch LEADER Script (Four-points Repeating) for Single TB3 [Same as rosrun] [Seperate Terminal] -->
-  <node name="nav_sen2_leader" pkg="collaborative_autonomy"  type="nav_sen2_leader" output="screen" launch-prefix="gnome-terminal --command"/>
+  <!-- TBD multi_map_merge.launch here and its arguments? -->
 
-  <!-- Launch CHASER Script (chase leader) for Single TB3 [Same as rosrun] [Seperate Terminal] -->
-  <node name="nav_sen2_chaser" pkg="collaborative_autonomy"  type="nav_sen2_chaser" output="screen" launch-prefix="gnome-terminal --command"/>
+  <!-- Launch LEADER Node (Four-points Repeating) for Single TB3 [Same as rosrun] [Seperate Terminal] -->
+  <node name="sen2_node_leader" pkg="collaborative_autonomy"  type="sen2_node_leader" output="screen" launch-prefix="gnome-terminal --command"/>
+
+  <!-- Launch CHASER Node (Chase leader) for Single TB3 [Same as rosrun] [Seperate Terminal] -->
+  <node name="sen2_node_chaser" pkg="collaborative_autonomy"  type="sen2_node_chaser" output="screen" launch-prefix="gnome-terminal --command"/>
 
 </launch>

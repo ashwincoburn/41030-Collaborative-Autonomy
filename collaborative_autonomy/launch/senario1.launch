@@ -5,11 +5,6 @@
   </include>
 
   <!-- Launch TB3 Navigation -->
-  <!--
-  <include file="$(find turtlebot3_navigation)/launch/sen1_turtlebot3_navigation.launch">
-    <arg name="map_file" value="$(find collaborative_autonomy)/maps/map.yaml" />
-  </include>
-  -->
   <include file="$(find collaborative_autonomy)/launch/navigation/sen1_turtlebot3_navigation.launch">
     <arg name="map_file" value="$(find collaborative_autonomy)/maps/map.yaml" />
   </include>

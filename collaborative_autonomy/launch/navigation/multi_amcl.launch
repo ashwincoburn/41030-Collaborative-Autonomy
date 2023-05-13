@@ -1,12 +1,18 @@
 <launch>
+  <!-- 
+    Difference between this and the original is that this can specify 
+    the node name at creation 
+  -->
+  
   <!-- Arguments -->
+  <arg name="node_name"     default="amcl"/>
   <arg name="scan_topic"     default="scan"/>
-  <arg name="initial_pose_x" default="-1.9503"/> <!-- Default from .launch file -->
-  <arg name="initial_pose_y" default="-0.4799"/> <!-- Default from .launch file -->
+  <arg name="initial_pose_x" default="0.0"/>
+  <arg name="initial_pose_y" default="0.0"/>
   <arg name="initial_pose_a" default="0.0"/>
 
   <!-- AMCL -->
-  <node pkg="amcl" type="amcl" name="amcl">
+  <node pkg="amcl" type="amcl" name="$(arg node_name)">
 
     <param name="min_particles"             value="500"/>
     <param name="max_particles"             value="3000"/>

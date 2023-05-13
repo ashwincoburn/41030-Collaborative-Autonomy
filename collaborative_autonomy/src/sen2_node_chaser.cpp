@@ -9,12 +9,12 @@
 typedef actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction> MoveBaseClient;
 using namespace std;
 
-/* This is designed to repeatedly drive a singular TB3 to four corners of the map */
+/* This is designed to chase the LEADER TB3 */
 
 int main(int argc, char** argv){
 
-  ros::init(argc, argv, "nav_sen2_chaser");
-  ROS_INFO_STREAM("STARTING nav_sen2_chaser...");
+  ros::init(argc, argv, "sen2_node_chaser");
+  ROS_INFO_STREAM("STARTING sen2_node_chaser...");
 
   while(ros::ok()){
     ROS_INFO_STREAM("Chaser Placeholder running...");
