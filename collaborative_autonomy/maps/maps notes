@@ -1,6 +1,12 @@
+Notes on Maps:
+The YAML file contains a directory that has to be tied to where you want it to save
+
+e.g.-
 image: /home/arcbash/catkin_ws/src/collaborative_autonomy/maps/map.pgm
 resolution: 0.050000
 origin: [-10.000000, -10.000000, 0.000000]
 negate: 0
 occupied_thresh: 0.65
 free_thresh: 0.196
+
+
