@@ -2,6 +2,9 @@
   Scenario 2: Two turtlebots, one leading and the other chasing. Both running AMCL navigation off
   the same map
   - Added SLAM for visualization issues with RViz
+  - To Improve:
+  - RViz not seeing Multimap? Also Rviz in general
+  - missing /odom?
 -->
 
 <launch>
@@ -10,7 +13,7 @@
   <arg name="first_tb3_y_pos" default=" -0.5"/>
   <arg name="second_tb3_x_pos" default=" 2.0"/>
   <arg name="second_tb3_y_pos" default=" 0.5"/>
-  <arg name="open_rviz" default="true"/>
+  <arg name="open_rviz" default="false"/>
 
   <!-- Launch Gazebo World and Spawn Both TB3s -->
   <include file="$(find collaborative_autonomy)/launch/gazebo/sen2_multi_turtlebot3.launch">
@@ -21,7 +24,7 @@
   </include>
 
   <!-- Launch SLAM for Both TB3s -->
-  <!-- You may have to set to be tb3_leader/base_footprint and the others also-->
+  <!--
   <group ns="tb3_leader">
     <include file="$(find turtlebot3_slam)/launch/turtlebot3_gmapping.launch">
         <arg name="set_base_frame" value="tb3_leader/base_footprint"/>
@@ -36,6 +39,7 @@
         <arg name="set_map_frame"  value="tb3_chaser/map"/>
     </include>
   </group>
+  -->
 
   <!-- Launch Navigation for Both TB3s -->
   <include file="$(find collaborative_autonomy)/launch/navigation/sen2_turtlebot3_navigation.launch">
@@ -64,11 +68,11 @@
 
   <!-- Launch LEADER Node (Four-points Repeating) for Single TB3 [Same as rosrun] [Seperate Terminal] -->
   <!-- <group ns="tb3_leader"> -->
-    <node name="sen2_node_leader" pkg="collaborative_autonomy"  type="sen2_node_leader" output="screen" launch-prefix="gnome-terminal --command"/>
+    <node name="leader_brain" pkg="collaborative_autonomy"  type="leader_brain" output="screen" launch-prefix="gnome-terminal --command"/>
   <!-- </group> -->
   <!-- Launch CHASER Node (Chase leader) for Single TB3 [Same as rosrun] [Seperate Terminal] -->
   <!-- <group ns="tb3_chaser"> -->
-    <node name="sen2_node_chaser" pkg="collaborative_autonomy"  type="sen2_node_chaser" output="screen" launch-prefix="gnome-terminal --command"/>
+    <node name="chaser_brain" pkg="collaborative_autonomy"  type="chaser_brain" output="screen" launch-prefix="gnome-terminal --command"/>
   <!-- </group> -->
 
 </launch>

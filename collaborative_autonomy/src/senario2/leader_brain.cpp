@@ -11,7 +11,7 @@ using namespace std;
 
 int main(int argc, char** argv){
 
-  ros::init(argc, argv, "sen2_node_leader");
+  ros::init(argc, argv, "leader_brain");
   ROS_INFO_STREAM("STARTING Senario 2: Leader...");
 
   /* (Optional) Start all the required packages and nodes using senario1.launch file */
@@ -20,11 +20,12 @@ int main(int argc, char** argv){
   /* Tell the action client(ac) that we want to spin a thread by default */
   //Connects to move_base action client created by move_base node in amcl package
   //Allows us to know when goal is reached
-  MoveBaseClient ac("tb3_leader/move_base", true); 
+  MoveBaseClient ac("tb3_leader/move_base", true);
 
   /* Wait for the action server to come up */
   while(!ac.waitForServer(ros::Duration(5.0))){
     ROS_INFO_STREAM("Waiting for the move_base action server to come up");
+    if(!ros::ok()){return 0;}
   }
 
   /* Define the vector of goals */
