@@ -20,7 +20,7 @@ int main(int argc, char** argv){
   /* Tell the action client(ac) that we want to spin a thread by default */
   //Connects to move_base action client created by move_base node in amcl package
   //Allows us to know when goal is reached
-  MoveBaseClient ac("move_base", true); 
+  MoveBaseClient ac("tb3_leader/move_base", true); 
 
   /* Wait for the action server to come up */
   while(!ac.waitForServer(ros::Duration(5.0))){

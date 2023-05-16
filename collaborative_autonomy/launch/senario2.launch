@@ -1,7 +1,7 @@
 <!-- 
-  Senario 2: Two turtlebots, one leading and the other chasing. Both running AMCL navigation off
+  Scenario 2: Two turtlebots, one leading and the other chasing. Both running AMCL navigation off
   the same map
-  - Added SLAM for visualisation issues with RViz
+  - Added SLAM for visualization issues with RViz
 -->
 
 <launch>
@@ -21,6 +21,7 @@
   </include>
 
   <!-- Launch SLAM for Both TB3s -->
+  <!-- You may have to set to be tb3_leader/base_footprint and the others also-->
   <group ns="tb3_leader">
     <include file="$(find turtlebot3_slam)/launch/turtlebot3_gmapping.launch">
         <arg name="set_base_frame" value="tb3_leader/base_footprint"/>
@@ -58,7 +59,7 @@
   <!-- RViz -->
   <group if="$(arg open_rviz)"> 
     <node pkg="rviz" type="rviz" name="rviz" required="true"
-          args="-d $(find collaborative_autonomy)/rviz/multi_navigation.rviz"/>
+          args="-d $(find collaborative_autonomy)/rviz/senario2.rviz"/>
   </group>
 
   <!-- Launch LEADER Node (Four-points Repeating) for Single TB3 [Same as rosrun] [Seperate Terminal] -->

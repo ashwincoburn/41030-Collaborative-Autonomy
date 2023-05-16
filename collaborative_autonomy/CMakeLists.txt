@@ -209,6 +209,7 @@ include_directories(
 #launch files you don't add here
 
 #executables
+
 add_executable(nav_test src/nav_test.cpp)
 target_link_libraries(nav_test ${catkin_LIBRARIES})
 
