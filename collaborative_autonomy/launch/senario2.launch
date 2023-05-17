@@ -6,7 +6,6 @@
   - RViz not seeing Multimap? Also Rviz in general
   - missing /odom?
 -->
-
 <launch>
   <!-- Arguments for this Launch File, defaults intended to be used -->
   <arg name="first_tb3_x_pos" default="-2.0"/>
@@ -42,7 +41,8 @@
   -->
 
   <!-- Launch Navigation for Both TB3s -->
-  <include file="$(find collaborative_autonomy)/launch/navigation/sen2_turtlebot3_navigation.launch">
+  <include file="$(find collaborative_autonomy)/launch/navigation/sen2_nav_v2.launch">
+  <!--  <include file="$(find collaborative_autonomy)/launch/navigation/sen2_turtlebot3_navigation.launch"> -->
     <arg name="map_file" value="$(find collaborative_autonomy)/maps/map.yaml" />
     <arg name="first_tb3_x_pos" value="$(arg first_tb3_x_pos)"/>
     <arg name="first_tb3_y_pos" value="$(arg first_tb3_y_pos)"/>

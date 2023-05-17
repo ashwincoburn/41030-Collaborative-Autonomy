@@ -1,8 +1,0 @@
-<!-- Launch LEADER Node (Four-points Repeating) for Single TB3 [Same as rosrun] [Seperate Terminal] -->
-  <group ns="tb3_leader">
-    <node name="leader_brain" pkg="collaborative_autonomy"  type="leader_brain" output="screen" launch-prefix="gnome-terminal --command"/>
-  </group>
-  <!-- Launch CHASER Node (Chase leader) for Single TB3 [Same as rosrun] [Seperate Terminal] -->
-  <group ns="tb3_chaser">
-    <node name="chaser_brain" pkg="collaborative_autonomy"  type="chaser_brain" output="screen" launch-prefix="gnome-terminal --command"/>
-  </group>

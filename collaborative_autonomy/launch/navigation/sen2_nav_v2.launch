@@ -1,0 +1,133 @@
+<!-- 
+    Inspired by https://github.com/airuchen/multi_turtlebot3
+    AMCL is the biggest to be updated, pointed at several different topics
+-->
+
+<launch>
+    <!-- Arguments (of this launch file) -->
+    <arg name="model" default="$(env TURTLEBOT3_MODEL)" doc="model type [burger, waffle, waffle_pi]"/>
+    <arg name="map_file" default="$(find collaborative_autonomy)/maps/map.yaml"/>
+    <arg name="move_forward_only" default="false"/>
+    <arg name="first_tb3_x_pos" default="-2.0"/>
+    <arg name="first_tb3_y_pos" default=" -0.5"/>
+    <arg name="first_tb3_a_pos" default=" 0.0"/>
+    <arg name="second_tb3_x_pos" default=" 2.0"/>
+    <arg name="second_tb3_y_pos" default=" 0.5"/>
+    <arg name="second_tb3_a_pos" default=" 0.0"/>
+    <arg name="first_tb3" default="tb3_leader" />
+    <arg name="second_tb3" default="tb3_chaser" />
+  
+    <!-- LEADER -->
+    <group ns="$(arg first_tb3)">
+
+        <!-- Map server -->
+        <node pkg="map_server" name="map_server" type="map_server" args="$(arg map_file)"/>
+      
+        <!-- AMCL -->
+        <node pkg="amcl" type="amcl" name="amcl">
+
+            <param name="min_particles"             value="500"/>
+            <param name="max_particles"             value="3000"/>
+            <param name="kld_err"                   value="0.02"/>
+            <param name="update_min_d"              value="0.20"/>
+            <param name="update_min_a"              value="0.20"/>
+            <param name="resample_interval"         value="1"/>
+            <param name="transform_tolerance"       value="0.5"/>
+            <param name="recovery_alpha_slow"       value="0.00"/>
+            <param name="recovery_alpha_fast"       value="0.00"/>
+            <param name="initial_pose_x"            value="$(arg first_tb3_x_pos)"/>
+            <param name="initial_pose_y"            value="$(arg first_tb3_y_pos)"/>
+            <param name="initial_pose_a"            value="$(arg first_tb3_a_pos)"/>
+            <param name="gui_publish_rate"          value="50.0"/>
+        
+            <remap from="scan"                      to="scan"/>
+            <param name="laser_max_range"           value="3.5"/>
+            <param name="laser_max_beams"           value="180"/>
+            <param name="laser_z_hit"               value="0.5"/>
+            <param name="laser_z_short"             value="0.05"/>
+            <param name="laser_z_max"               value="0.05"/>
+            <param name="laser_z_rand"              value="0.5"/>
+            <param name="laser_sigma_hit"           value="0.2"/>
+            <param name="laser_lambda_short"        value="0.1"/>
+            <param name="laser_likelihood_max_dist" value="2.0"/>
+            <param name="laser_model_type"          value="likelihood_field"/>
+        
+            <param name="odom_model_type"           value="diff"/>
+            <param name="odom_alpha1"               value="0.1"/>
+            <param name="odom_alpha2"               value="0.1"/>
+            <param name="odom_alpha3"               value="0.1"/>
+            <param name="odom_alpha4"               value="0.1"/>
+            <param name="odom_frame_id"             value="/$(arg first_tb3)/odom"/>
+            <param name="base_frame_id"             value="/$(arg first_tb3)/base_footprint"/>
+        
+        </node>
+
+        <!-- move_base -->
+        <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
+            <param name="base_local_planner" value="dwa_local_planner/DWAPlannerROS" />
+            <rosparam file="$(find collaborative_autonomy)/launch/navigation/multi_param/leader_param/local_costmap_params.yaml" command="load" />
+            <rosparam file="$(find collaborative_autonomy)/launch/navigation/multi_param/leader_param/global_costmap_params.yaml" command="load" />
+            <rosparam file="$(find collaborative_autonomy)/launch/navigation/multi_param/leader_param/move_base_params.yaml" command="load" />
+            <rosparam file="$(find collaborative_autonomy)/launch/navigation/multi_param/leader_param/dwa_local_planner_params_$(arg model).yaml" command="load" />
+            <param name="DWAPlannerROS/min_vel_x" value="0.0" if="$(arg move_forward_only)" />
+        </node>
+    </group>
+  
+    <!-- CHASER -->
+    <group ns="$(arg second_tb3)">
+
+        <!-- Map server -->
+        <node pkg="map_server" name="map_server" type="map_server" args="$(arg map_file)"/>
+      
+        <!-- AMCL -->
+        <node pkg="amcl" type="amcl" name="amcl">
+
+            <param name="min_particles"             value="500"/>
+            <param name="max_particles"             value="3000"/>
+            <param name="kld_err"                   value="0.02"/>
+            <param name="update_min_d"              value="0.20"/>
+            <param name="update_min_a"              value="0.20"/>
+            <param name="resample_interval"         value="1"/>
+            <param name="transform_tolerance"       value="0.5"/>
+            <param name="recovery_alpha_slow"       value="0.00"/>
+            <param name="recovery_alpha_fast"       value="0.00"/>
+            <param name="initial_pose_x"            value="$(arg second_tb3_x_pos)"/>
+            <param name="initial_pose_y"            value="$(arg second_tb3_y_pos)"/>
+            <param name="initial_pose_a"            value="$(arg second_tb3_a_pos)"/>
+            <param name="gui_publish_rate"          value="50.0"/>
+        
+            <remap from="scan"                      to="scan"/>
+            <param name="laser_max_range"           value="3.5"/>
+            <param name="laser_max_beams"           value="180"/>
+            <param name="laser_z_hit"               value="0.5"/>
+            <param name="laser_z_short"             value="0.05"/>
+            <param name="laser_z_max"               value="0.05"/>
+            <param name="laser_z_rand"              value="0.5"/>
+            <param name="laser_sigma_hit"           value="0.2"/>
+            <param name="laser_lambda_short"        value="0.1"/>
+            <param name="laser_likelihood_max_dist" value="2.0"/>
+            <param name="laser_model_type"          value="likelihood_field"/>
+        
+            <param name="odom_model_type"           value="diff"/>
+            <param name="odom_alpha1"               value="0.1"/>
+            <param name="odom_alpha2"               value="0.1"/>
+            <param name="odom_alpha3"               value="0.1"/>
+            <param name="odom_alpha4"               value="0.1"/>
+            <param name="odom_frame_id"             value="/$(arg second_tb3)/odom"/>
+            <param name="base_frame_id"             value="/$(arg second_tb3)/base_footprint"/>
+        
+        </node>
+
+        <!-- move_base -->
+        <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
+            <param name="base_local_planner" value="dwa_local_planner/DWAPlannerROS" />
+            <rosparam file="$(find collaborative_autonomy)/launch/navigation/multi_param/chaser_param/local_costmap_params.yaml" command="load" />
+            <rosparam file="$(find collaborative_autonomy)/launch/navigation/multi_param/chaser_param/global_costmap_params.yaml" command="load" />
+            <rosparam file="$(find collaborative_autonomy)/launch/navigation/multi_param/chaser_param/move_base_params.yaml" command="load" />
+            <rosparam file="$(find collaborative_autonomy)/launch/navigation/multi_param/chaser_param/dwa_local_planner_params_$(arg model).yaml" command="load" />
+            <param name="DWAPlannerROS/min_vel_x" value="0.0" if="$(arg move_forward_only)" />
+        </node>
+    </group>
+  
+  </launch>
+  
