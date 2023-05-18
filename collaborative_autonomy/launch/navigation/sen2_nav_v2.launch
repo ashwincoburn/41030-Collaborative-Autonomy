@@ -1,6 +1,7 @@
 <!-- 
     Inspired by https://github.com/airuchen/multi_turtlebot3
-    AMCL is the biggest to be updated, pointed at several different topics
+    AMCL pointed to appropriate topics
+    move_base yaml param files pointed to appropriate topics
 -->
 
 <launch>

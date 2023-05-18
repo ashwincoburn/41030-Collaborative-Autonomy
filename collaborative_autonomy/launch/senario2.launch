@@ -12,7 +12,7 @@
   <arg name="first_tb3_y_pos" default=" -0.5"/>
   <arg name="second_tb3_x_pos" default=" 2.0"/>
   <arg name="second_tb3_y_pos" default=" 0.5"/>
-  <arg name="open_rviz" default="false"/>
+  <arg name="open_rviz" default="true"/>
 
   <!-- Launch Gazebo World and Spawn Both TB3s -->
   <include file="$(find collaborative_autonomy)/launch/gazebo/sen2_multi_turtlebot3.launch">
@@ -67,12 +67,9 @@
   </group>
 
   <!-- Launch LEADER Node (Four-points Repeating) for Single TB3 [Same as rosrun] [Seperate Terminal] -->
-  <!-- <group ns="tb3_leader"> -->
-    <node name="leader_brain" pkg="collaborative_autonomy"  type="leader_brain" output="screen" launch-prefix="gnome-terminal --command"/>
-  <!-- </group> -->
+  <node name="leader_brain" pkg="collaborative_autonomy"  type="leader_brain" output="screen" launch-prefix="gnome-terminal --command"/>
+
   <!-- Launch CHASER Node (Chase leader) for Single TB3 [Same as rosrun] [Seperate Terminal] -->
-  <!-- <group ns="tb3_chaser"> -->
-    <node name="chaser_brain" pkg="collaborative_autonomy"  type="chaser_brain" output="screen" launch-prefix="gnome-terminal --command"/>
-  <!-- </group> -->
+  <node name="chaser_brain" pkg="collaborative_autonomy"  type="chaser_brain" output="screen" launch-prefix="gnome-terminal --command"/>
 
 </launch>

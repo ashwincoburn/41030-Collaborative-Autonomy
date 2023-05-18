@@ -10,11 +10,12 @@ typedef actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction> MoveBaseCl
 using namespace std;
 
 /* This is designed to chase the LEADER TB3 */
+/* Simple chase algorithm that stops chasing if within proximity of LEADER */
 
 int main(int argc, char** argv){
 
-  ros::init(argc, argv, "sen2_node_chaser");
-  ROS_INFO_STREAM("STARTING sen2_node_chaser...");
+  ros::init(argc, argv, "chaser_brain");
+  ROS_INFO_STREAM("STARTING chaser_brain...");
 
   while(ros::ok()){
     ROS_INFO_STREAM("Chaser Placeholder running...");
