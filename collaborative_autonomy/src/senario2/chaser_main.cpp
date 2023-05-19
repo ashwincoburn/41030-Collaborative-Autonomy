@@ -11,8 +11,6 @@
 
 using namespace std;
 
-std::unique_ptr<MoveBaseClient> ac_ptr;
-
 int main(int argc, char **argv)
 {
 
@@ -33,20 +31,6 @@ int main(int argc, char **argv)
     ros::init(argc, argv, "chaser_brain");
     ROS_INFO_STREAM("STARTING chaser_brain...");
 
-    /* Tell the action client(ac) that we want to spin a thread by default */
-    // Connects to move_base action client created by move_base node in amcl package
-    // Allows us to know when goal is reached
-    MoveBaseClient ac("tb3_chaser/move_base", true);
-    //added:
-    ac_ptr = std::make_unique<MoveBaseClient>(std::move(ac));
-
-    /* Wait for the action server to come up */
-    while (!ac.waitForServer(ros::Duration(5.0)))
-    {
-        ROS_INFO_STREAM("Waiting for the move_base action server to come up");
-        if (!ros::ok()){return 0;}
-    }
-
     /**
      * NodeHandle is the main access point to communications with the ROS system.
      * The first NodeHandle constructed will fully initialize this node, and the last
@@ -58,7 +42,7 @@ int main(int argc, char **argv)
      * Create an object of type Chaser_Brain and pass it a node handle
      */
     // std::shared_ptr<Chaser_Brain> ChaserBrainPtr(new Chaser_Brain(nh, ac));
-    std::shared_ptr<Chaser_Brain> ChaserBrainPtr(new Chaser_Brain(nh, std::move(ac_ptr)));
+    std::shared_ptr<Chaser_Brain> ChaserBrainPtr(new Chaser_Brain(nh));
 
     /**
      * Let's start seperate thread first, to do that we need to create object
@@ -70,7 +54,7 @@ int main(int argc, char **argv)
     // ends when cntrl+c is detected
     ros::spin();
 
-    Chaser_Brain::killThreads();
+    // Chaser_Brain::killThreads(); //Should hopefully prematurely end threads
 
     ros::shutdown();
 

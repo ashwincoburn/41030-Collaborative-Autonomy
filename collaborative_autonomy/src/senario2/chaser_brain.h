@@ -18,7 +18,7 @@ using namespace std;
 class Chaser_Brain
 {
 public:
-    Chaser_Brain(ros::NodeHandle nh,MoveBaseClient ac);
+    Chaser_Brain(ros::NodeHandle nh);
 
     ~Chaser_Brain();
 
