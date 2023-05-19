@@ -11,7 +11,8 @@ find_package(catkin REQUIRED COMPONENTS
   actionlib
   move_base_msgs
   roscpp
-  rospy
+  std_msgs
+  nav_msgs
 )
 
 ## System dependencies are found with CMake's conventions
@@ -216,5 +217,5 @@ target_link_libraries(nav_test ${catkin_LIBRARIES})
 add_executable(leader_brain src/senario2/leader_brain.cpp)
 target_link_libraries(leader_brain ${catkin_LIBRARIES})
 
-add_executable(chaser_brain src/senario2/chaser_brain.cpp)
+add_executable(chaser_brain src/senario2/chaser_brain.cpp src/senario2/chaser_main.cpp)
 target_link_libraries(chaser_brain ${catkin_LIBRARIES})

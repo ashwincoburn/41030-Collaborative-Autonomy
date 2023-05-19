@@ -1,3 +1,4 @@
+#include "chaser_brain.h"
 #include <ros/ros.h>
 #include <move_base_msgs/MoveBaseAction.h>
 #include <actionlib/client/simple_action_client.h>
@@ -15,68 +16,121 @@ using namespace std;
 /* As we have a subscriber, looks like we'll need ros::spin() */
 // http://wiki.ros.org/evarobot_odometry/Tutorials/indigo/Writing%20a%20Simple%20Subscriber%20for%20Odometry
 // <node name="chaser_brain" pkg="collaborative_autonomy"  type="chaser_brain" output="screen" launch-prefix="gnome-terminal --command"/>
-//Write a class that saves odom data, thread that checks for changes in the data and sends updates
+// Write a class that saves odom data, thread that checks for changes in the data and sends updates
 
-void chaserCallback(const nav_msgs::Odometry::ConstPtr& msg, unsigned int &headerSequencer = 0;){
-  /*
-    Non-Blocking Function, designed to run once and fast
-  */
-  move_base_msgs::MoveBaseGoal pointToReach;
-
-  /* Head Towards XYZ of LEADER */
-  pointToReach.target_pose.pose.position.x = msg->pose.pose.position.x; 
-  pointToReach.target_pose.pose.position.y = msg->pose.pose.position.y; 
-  pointToReach.target_pose.pose.position.z = msg->pose.pose.position.z;
-  pointToAdd.target_pose.header.frame_id = "map"; //Global Frame
-
-  headerSequencer += 1;
-  goals.at(currentGoal).target_pose.header.seq = headerSequencer;
-  goals.at(currentGoal).target_pose.header.stamp = ros::Time::now();
-
-  ac.sendGoal(goals.at(currentGoal));
-  ROS_INFO_STREAM("Travelling Towards Goal " << currentGoal << " with YAW " << goalPose.at(currentGoal));
-
-  ac.waitForResult();
-
-  if(ac.getState() == actionlib::SimpleClientGoalState::SUCCEEDED){
-    ROS_INFO_STREAM("Goal " << currentGoal << " Reached!");
-  } else {
-    ROS_INFO_STREAM("ERROR: Failed to Reach Goal, BREAKING THE LOOP");
-    break;
+Chaser_Brain::Chaser_Brain(ros::NodeHandle nh,MoveBaseClient ac) : 
+nh_(nh), ac_(*ac_ptr), headerSequencer_(0), runLoop_(true), dataCollected_(false), robotsDistTolerance_(2.0),
+robotsDistance_(100.0) 
+{
+  // Subscriber runs whenever a new message arrives
+  // 50 means buffer, stores missed topic readings
+  // Small buffer means that the message read will be closest to latest
+  sub1_ = nh_.subscribe("tb3/leader/odom", 10, leaderOdomCallback);
+  sub2_ = nh_.subscribe("tb3/chaser/odom", 10, chaserOdomCallback);
+  {
+  unique_lock<mutex> lck(chaserMutex_);
+  pointToReach_.target_pose.pose.position.z = 0;
+  pointToReach_.target_pose.header.frame_id = "map"; // Global Frame
   }
-
+  
 }
 
+Chaser_Brain::~Chaser_Brain()
+{
+}
 
-int main(int argc, char** argv){
+void Chaser_Brain::leaderOdomCallback(const nav_msgs::Odometry::ConstPtr &msg)
+{
+  /*
+    Non-Blocking Function, designed to run once and fast when it's activated by new data
+    Simply updates the current location of LEADER
+  */
+  {
+  unique_lock<mutex> lck(leaderMutex_);
+  pointToReach_.target_pose.pose.position.x = msg->pose.pose.position.x;
+  pointToReach_.target_pose.pose.position.y = msg->pose.pose.position.y;
+  }
+  if(!dataCollected_){dataCollected_ = true;}
+}
 
-  ros::init(argc, argv, "chaser_brain");
-  ROS_INFO_STREAM("STARTING chaser_brain...");
-  ros::NodeHandle nh;
+void Chaser_Brain::chaserOdomCallback(const nav_msgs::Odometry::ConstPtr &msg)
+{
+  /*
+    Non-Blocking Function, designed to run once and fast when it's activated by new data
+    Simply updates the current location of CHASER
+  */
+  {
+  unique_lock<mutex> lck(chaserMutex_);
+  currentPosition_.target_pose.pose.position.x = msg->pose.pose.position.x;
+  currentPosition_.target_pose.pose.position.y = msg->pose.pose.position.y;
+  }
+}
 
-  /* Tell the action client(ac) that we want to spin a thread by default */
-  //Connects to move_base action client created by move_base node in amcl package
-  //Allows us to know when goal is reached
-  MoveBaseClient ac("tb3_chaser/move_base", true);
+bool Chaser_Brain::closeProximity(void){
 
-  /* Wait for the action server to come up */
-  while(!ac.waitForServer(ros::Duration(5.0))){
-    ROS_INFO_STREAM("Waiting for the move_base action server to come up");
-    if(!ros::ok()){return 0;}
+  {
+  unique_lock<mutex> lck(chaserMutex_);
+  unique_lock<mutex> lck(leaderMutex_);
+  robotsDistance_ = abs(sqrt(pow(pointToReach_.target_pose.pose.position.x-currentPosition_.target_pose.pose.position.x,2)
+    +pow(pointToReach_.target_pose.pose.position.y-currentPosition_.target_pose.pose.position.y,2)));
   }
 
-  unsigned int headerSequencer = 0;
+  if(robotsDistance_ <= robotsDistTolerance_){
+    return true;
+  } else {
+    return false;
+  }
+}
 
-  //Subscriber runs whenever a new message arrives
-  //50 means buffer, stores missed topic readings
-  //Small buffer means that the message read will be closest to latest
-  ros::Subscriber sub = nh.subscribe("tb3/leader/odom", 10, chaserCallback);
+void Chaser_Brain::killThreads(void){
+  ROS_INFO_STREAM("Killing Threads...");
+  runLoop_ = false;
+}
 
-  //blocking call, allows subscribers to run and get callbacks and stuff
-  //ends when cntrl+c is detected
-  ros::spin();
+void Chaser_Brain::sendNewGoal(void){
 
-  ros::shutdown();
+  ROS_INFO_STREAM("Travelling Towards Goal (" << pointToReach_.target_pose.pose.position.x << 
+  "," << pointToReach_.target_pose.pose.position.y << ")...");
+  
+  {
+  unique_lock<mutex> lck(leaderMutex_);
+  ac_.cancelGoal();
+  
+  headerSequencer_ += 1;
+  pointToReach_.target_pose.header.seq = headerSequencer_;
+  pointToReach_.target_pose.header.stamp = ros::Time::now();
 
-  return 0;
+  ac_.sendGoal(pointToReach_);
+  }
+}
+
+void Chaser_Brain::chaserThread(void)
+{
+  /*
+    Blocking function, designed to run in a seperate thread
+    Checks for new odometry and sends new goal request, Low Loop Rate
+  */
+
+  move_base_msgs::MoveBaseGoal previousTarget;
+
+  // Wait for readings to come in
+  while (!dataCollected_){}
+
+  previousTarget = pointToReach_; //Means we'll miss inital spawn but we need a value
+
+  while (runLoop_){
+    // if(closeProximity() == true && ac_.getState() == ACTIVE){
+    if(closeProximity() == true){
+      
+      ac_.cancelAllGoals();
+    
+    } else if (previousTarget.target_pose.pose.position.x != currentPosition_.target_pose.pose.position.x ||
+      previousTarget.target_pose.pose.position.y != currentPosition_.target_pose.pose.position.y){
+
+      sendNewGoal();
+    
+    }
+    //ros::Rate is a better alternative, but for now just use this
+    std::this_thread::sleep_for (std::chrono::milliseconds(100));
+  }
 }

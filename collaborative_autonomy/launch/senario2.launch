@@ -70,5 +70,5 @@
   <node name="leader_brain" pkg="collaborative_autonomy"  type="leader_brain" output="screen" launch-prefix="gnome-terminal --command"/>
 
   <!-- Launch CHASER Node (Chase leader) for Single TB3 [Same as rosrun] [Seperate Terminal] -->
-
+  <node name="chaser_brain" pkg="collaborative_autonomy"  type="chaser_brain" output="screen" launch-prefix="gnome-terminal --command"/>
 </launch>
