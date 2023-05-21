@@ -48,13 +48,15 @@ int main(int argc, char **argv)
      * Let's start seperate thread first, to do that we need to create object
      * and thereafter start the thread on the function we desire
      */
+    ROS_INFO_STREAM("[MAIN] Starting chaserThread...");
     std::thread chaserThread(&Chaser_Brain::chaserThread, ChaserBrainPtr);
 
     // blocking call, allows subscribers to run and get callbacks and stuff
     // ends when cntrl+c is detected
     ros::spin();
 
-    // Chaser_Brain::killThreads(); //Should hopefully prematurely end threads
+    // ChaserBrainPtr->killThreads(); //Should hopefully prematurely end threads
+    ROS_INFO_STREAM("[MAIN] ROS Shutdown Triggered");
 
     ros::shutdown();
 

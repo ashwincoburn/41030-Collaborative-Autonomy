@@ -10,6 +10,8 @@
 typedef actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction> MoveBaseClient;
 using namespace std;
 
+#define DEBUG true;
+
 /* This is designed to chase the LEADER TB3 */
 /* Simple chase algorithm that stops chasing if within proximity of LEADER */
 /* As we have a subscriber, looks like we'll need ros::spin() */
@@ -30,10 +32,10 @@ robotsDistTolerance_(2.0), robotsDistance_(100.0)
   ROS_INFO("move_base action server is up");
 
   // Subscriber runs whenever a new message arrives
-  // 50 means buffer, stores missed topic readings
+  // 10 means buffer, stores missed topic readings
   // Small buffer means that the message read will be closest to latest
-  sub1_ = nh_.subscribe("tb3/leader/odom", 10, &Chaser_Brain::leaderOdomCallback,this);
-  sub2_ = nh_.subscribe("tb3/chaser/odom", 10, &Chaser_Brain::chaserOdomCallback,this);
+  sub1_ = nh_.subscribe("tb3_leader/odom", 10, &Chaser_Brain::leaderOdomCallback,this);
+  sub2_ = nh_.subscribe("tb3_chaser/odom", 10, &Chaser_Brain::chaserOdomCallback,this);
   
   {
   unique_lock<mutex> lck(chaserMutex_);
@@ -46,12 +48,15 @@ Chaser_Brain::~Chaser_Brain()
 {
 }
 
-void Chaser_Brain::leaderOdomCallback(const nav_msgs::Odometry::ConstPtr &msg)
+void Chaser_Brain::leaderOdomCallback(const nav_msgs::Odometry::ConstPtr &msg) /// look for /nav_msgs/Odometry
 {
   /*
     Non-Blocking Function, designed to run once and fast when it's activated by new data
     Simply updates the current location of LEADER
   */
+  #ifdef DEBUG
+  ROS_INFO_STREAM("[BRAIN] leaderOdom: (" << msg->pose.pose.position.x << "," << msg->pose.pose.position.y << ")");
+  #endif
   {
   unique_lock<mutex> lck(leaderMutex_);
   pointToReach_.target_pose.pose.position.x = msg->pose.pose.position.x;
@@ -66,6 +71,9 @@ void Chaser_Brain::chaserOdomCallback(const nav_msgs::Odometry::ConstPtr &msg)
     Non-Blocking Function, designed to run once and fast when it's activated by new data
     Simply updates the current location of CHASER
   */
+  #ifdef DEBUG
+  ROS_INFO_STREAM("[BRAIN] chaserOdom: (" << msg->pose.pose.position.x << "," << msg->pose.pose.position.y << ")");
+  #endif
   {
   unique_lock<mutex> lck(chaserMutex_);
   currentPosition_.target_pose.pose.position.x = msg->pose.pose.position.x;
@@ -79,6 +87,9 @@ bool Chaser_Brain::closeProximity(void){
     +pow(pointToReach_.target_pose.pose.position.y-currentPosition_.target_pose.pose.position.y,2)));
 
   if(robotsDistance_ <= robotsDistTolerance_){
+    #ifdef DEBUG
+    ROS_INFO_STREAM("[BRAIN] Close Proximity Detected!");
+    #endif
     return true;
   } else {
     return false;
@@ -86,7 +97,9 @@ bool Chaser_Brain::closeProximity(void){
 }
 
 void Chaser_Brain::killThreads(void){
-  ROS_INFO_STREAM("Killing Threads...");
+  #ifdef DEBUG
+  ROS_INFO_STREAM("[BRAIN] Killing Threads...");
+  #endif
   runLoop_ = false;
 }
 
@@ -111,13 +124,47 @@ void Chaser_Brain::chaserThread(void)
 {
   /*
     Blocking function, designed to run in a seperate thread
-    Checks for new odometry and sends new goal request, Low Loop Rate
+    Checks for new odometry and sends new goal request, Slow Loop Rate
   */
 
   move_base_msgs::MoveBaseGoal previousTarget;
 
   // Wait for readings to come in
-  while (!dataCollected_){}
+  ros::Rate loop_rate(50);
+  while (!dataCollected_){
+
+    #ifdef DEBUG
+    ROS_INFO_STREAM("[BRAIN] Waiting for odom data to show...");
+    #endif
+
+    if(!ros::ok()){return;}
+    
+    loop_rate.sleep();
+  }
+
+  #ifdef DEBUG
+  ROS_INFO_STREAM("[BRAIN] Got odom data, starting logic...");
+  #endif
+
+
+
+  // ros::Rate loop_rate(10);
+  // while (ros::ok() || !dataCollected_){
+  //   ros::spinOnce();
+  //   if(dataCollected_){
+  //     #ifdef DEBUG
+  //     ROS_INFO_STREAM("[BRAIN] LOOP: Got odom data, starting logic...");
+  //     #endif
+  //   } else {
+  //     #ifdef DEBUG
+  //     ROS_INFO_STREAM("[BRAIN] Waiting for odom data to show...");
+  //     #endif
+  //   }
+  //   if(!ros::ok()){return;}
+  //   loop_rate.sleep();
+  // }
+
+  
 
   previousTarget = pointToReach_; //Means we'll miss inital spawn but we need a value
 

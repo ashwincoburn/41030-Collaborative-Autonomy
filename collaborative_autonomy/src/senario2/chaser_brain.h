@@ -22,9 +22,9 @@ public:
 
     ~Chaser_Brain();
 
-    void chaserOdomCallback(const nav_msgs::Odometry::ConstPtr &msg);
-
     void leaderOdomCallback(const nav_msgs::Odometry::ConstPtr &msg);
+
+    void chaserOdomCallback(const nav_msgs::Odometry::ConstPtr &msg);
 
     void chaserThread(void);
 
@@ -40,6 +40,8 @@ private:
     MoveBaseClient ac_;            // move_base action client
     ros::Subscriber sub1_;
     ros::Subscriber sub2_;
+    // nav_msgs::Odometry chaserOdo_;//!< The current pose of chaser platform
+    // nav_msgs::Odometry leaderOdo_;//!< The current pose of leader platform
 
     unsigned int headerSequencer_; // Action Client Sequencer
     move_base_msgs::MoveBaseGoal pointToReach_; //XYZ point to reach
