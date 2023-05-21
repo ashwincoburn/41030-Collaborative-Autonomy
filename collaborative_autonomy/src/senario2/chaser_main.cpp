@@ -55,7 +55,7 @@ int main(int argc, char **argv)
     // ends when cntrl+c is detected
     ros::spin();
 
-    // ChaserBrainPtr->killThreads(); //Should hopefully prematurely end threads
+    ChaserBrainPtr->killThreads(); //Should hopefully prematurely end threads
     ROS_INFO_STREAM("[MAIN] ROS Shutdown Triggered");
 
     ros::shutdown();

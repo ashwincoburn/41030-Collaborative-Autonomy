@@ -46,10 +46,10 @@ private:
     unsigned int headerSequencer_; // Action Client Sequencer
     move_base_msgs::MoveBaseGoal pointToReach_; //XYZ point to reach
     move_base_msgs::MoveBaseGoal currentPosition_; //Current Location
-    mutex chaserMutex_; //For accessing shared chaser's data
-    mutex leaderMutex_; //For accessing shared leader's data
+    mutex dataMutex_; //For accessing shared data
     atomic<bool> runLoop_; //For breaking while loop of chaser odom and leader odom threads
     atomic<bool> dataCollected_; //Controls waiting for odom data from leader
+    atomic<bool> allowCollectData_; //Allows Callback funcs to update odom data
     double robotsDistTolerance_; //Scalar distance tolerance that stops chaser from getting any closer
     double robotsDistance_; //Scalar distance between robots
 };

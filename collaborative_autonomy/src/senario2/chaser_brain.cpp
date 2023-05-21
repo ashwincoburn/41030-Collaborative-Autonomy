@@ -22,7 +22,7 @@ using namespace std;
 
 Chaser_Brain::Chaser_Brain(ros::NodeHandle nh) : 
 nh_(nh), ac_("tb3_chaser/move_base", true), headerSequencer_(0), runLoop_(true), dataCollected_(false), 
-robotsDistTolerance_(2.0), robotsDistance_(100.0) 
+robotsDistTolerance_(0.75), robotsDistance_(100.0), allowCollectData_(true)
 {
   /* Wait for the action server to come up */
   while (!ac_.waitForServer(ros::Duration(5.0)))
@@ -31,17 +31,14 @@ robotsDistTolerance_(2.0), robotsDistance_(100.0)
   }
   ROS_INFO("move_base action server is up");
 
+  pointToReach_.target_pose.pose.position.z = 0;
+  pointToReach_.target_pose.header.frame_id = "map"; // Global Frame
+
   // Subscriber runs whenever a new message arrives
   // 10 means buffer, stores missed topic readings
   // Small buffer means that the message read will be closest to latest
   sub1_ = nh_.subscribe("tb3_leader/odom", 10, &Chaser_Brain::leaderOdomCallback,this);
   sub2_ = nh_.subscribe("tb3_chaser/odom", 10, &Chaser_Brain::chaserOdomCallback,this);
-  
-  {
-  unique_lock<mutex> lck(chaserMutex_);
-  pointToReach_.target_pose.pose.position.z = 0;
-  pointToReach_.target_pose.header.frame_id = "map"; // Global Frame
-  }
 }
 
 Chaser_Brain::~Chaser_Brain()
@@ -52,16 +49,21 @@ void Chaser_Brain::leaderOdomCallback(const nav_msgs::Odometry::ConstPtr &msg) /
 {
   /*
     Non-Blocking Function, designed to run once and fast when it's activated by new data
-    Simply updates the current location of LEADER
+    Simply updates the current odom of LEADER
   */
-  #ifdef DEBUG
-  ROS_INFO_STREAM("[BRAIN] leaderOdom: (" << msg->pose.pose.position.x << "," << msg->pose.pose.position.y << ")");
-  #endif
-  {
-  unique_lock<mutex> lck(leaderMutex_);
-  pointToReach_.target_pose.pose.position.x = msg->pose.pose.position.x;
-  pointToReach_.target_pose.pose.position.y = msg->pose.pose.position.y;
+  // #ifdef DEBUG
+  // ROS_INFO_STREAM("[BRAIN] leaderOdom: (" << msg->pose.pose.position.x << "," << msg->pose.pose.position.y << ")");
+  // #endif
+
+  if(allowCollectData_){
+    {
+    unique_lock<mutex> lck(dataMutex_);
+    pointToReach_.target_pose.pose.position.x = msg->pose.pose.position.x;
+    pointToReach_.target_pose.pose.position.y = msg->pose.pose.position.y;
+    pointToReach_.target_pose.pose.orientation = msg->pose.pose.orientation;
+    }
   }
+
   if(!dataCollected_){dataCollected_ = true;}
 }
 
@@ -69,15 +71,18 @@ void Chaser_Brain::chaserOdomCallback(const nav_msgs::Odometry::ConstPtr &msg)
 {
   /*
     Non-Blocking Function, designed to run once and fast when it's activated by new data
-    Simply updates the current location of CHASER
+    Simply updates the current odom of CHASER
   */
-  #ifdef DEBUG
-  ROS_INFO_STREAM("[BRAIN] chaserOdom: (" << msg->pose.pose.position.x << "," << msg->pose.pose.position.y << ")");
-  #endif
-  {
-  unique_lock<mutex> lck(chaserMutex_);
-  currentPosition_.target_pose.pose.position.x = msg->pose.pose.position.x;
-  currentPosition_.target_pose.pose.position.y = msg->pose.pose.position.y;
+  // #ifdef DEBUG
+  // ROS_INFO_STREAM("[BRAIN] chaserOdom: (" << msg->pose.pose.position.x << "," << msg->pose.pose.position.y << ")");
+  // #endif
+  
+  if(allowCollectData_){
+    {
+    unique_lock<mutex> lck(dataMutex_);
+    currentPosition_.target_pose.pose.position.x = msg->pose.pose.position.x;
+    currentPosition_.target_pose.pose.position.y = msg->pose.pose.position.y;
+    }
   }
 }
 
@@ -109,7 +114,7 @@ void Chaser_Brain::sendNewGoal(void){
   "," << pointToReach_.target_pose.pose.position.y << ")...");
   
   {
-  unique_lock<mutex> lck(leaderMutex_);
+  unique_lock<mutex> lck(dataMutex_);
   ac_.cancelGoal();
   
   headerSequencer_ += 1;
@@ -130,7 +135,7 @@ void Chaser_Brain::chaserThread(void)
   move_base_msgs::MoveBaseGoal previousTarget;
 
   // Wait for readings to come in
-  ros::Rate loop_rate(50);
+  ros::Rate loop_rate(2);
   while (!dataCollected_){
 
     #ifdef DEBUG
@@ -146,40 +151,31 @@ void Chaser_Brain::chaserThread(void)
   ROS_INFO_STREAM("[BRAIN] Got odom data, starting logic...");
   #endif
 
-
-
-  // ros::Rate loop_rate(10);
-  // while (ros::ok() || !dataCollected_){
-  //   ros::spinOnce();
-  //   if(dataCollected_){
-  //     #ifdef DEBUG
-  //     ROS_INFO_STREAM("[BRAIN] LOOP: Got odom data, starting logic...");
-  //     #endif
-  //   } else {
-  //     #ifdef DEBUG
-  //     ROS_INFO_STREAM("[BRAIN] Waiting for odom data to show...");
-  //     #endif
-  //   }
-  //   if(!ros::ok()){return;}
-  //   loop_rate.sleep();
-  // }
-
-  
-
+  // loop_rate = ros::Rate(1); //Change Goal every 1s
+  ros::Rate loop_rate2(1); //1 Cycle Per Second
   previousTarget = pointToReach_; //Means we'll miss inital spawn but we need a value
 
   while (runLoop_ || ros::ok()){
+    if(!ros::ok()){return;}
+
+    //First check if we are too close and the robot is running - We want to stop
     if(closeProximity() == true && ac_.getState() == actionlib::SimpleClientGoalState::ACTIVE){
 
-      ac_.cancelAllGoals();
+      ac_.cancelGoal();
     
-    } else if (previousTarget.target_pose.pose.position.x != currentPosition_.target_pose.pose.position.x ||
-      previousTarget.target_pose.pose.position.y != currentPosition_.target_pose.pose.position.y){
+    //Next case, check if new XY location is not the same as the last XY location, if new we send a command to go
+    } else if (previousTarget.target_pose.pose.position.x != pointToReach_.target_pose.pose.position.x ||
+      previousTarget.target_pose.pose.position.y != pointToReach_.target_pose.pose.position.y){
 
       sendNewGoal();
+
+      #ifdef DEBUG
+      ROS_INFO_STREAM("[BRAIN] New Goal Sent!");
+      #endif
     
     }
-    //ros::Rate is a better alternative, but for now just use this
-    std::this_thread::sleep_for (std::chrono::milliseconds(100));
+
+    previousTarget = pointToReach_;
+    loop_rate2.sleep();
   }
 }
