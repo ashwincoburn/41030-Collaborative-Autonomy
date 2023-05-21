@@ -29,7 +29,7 @@ robotsDistTolerance_(0.75), robotsDistance_(100.0), allowCollectData_(true)
   {
     ROS_INFO_STREAM("Waiting for the move_base action server to come up");
   }
-  ROS_INFO("move_base action server is up");
+  ROS_INFO_STREAM("move_base action server is up");
 
   pointToReach_.target_pose.pose.position.z = 0;
   pointToReach_.target_pose.header.frame_id = "map"; // Global Frame

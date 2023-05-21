@@ -8,6 +8,7 @@ project(collaborative_autonomy)
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
+  turtlebot3_gazebo
   actionlib
   move_base_msgs
   roscpp
@@ -211,7 +212,7 @@ include_directories(
 
 #executables
 
-add_executable(nav_test src/nav_test.cpp)
+add_executable(nav_test src/senario1/nav_test.cpp)
 target_link_libraries(nav_test ${catkin_LIBRARIES})
 
 add_executable(leader_brain src/senario2/leader_brain.cpp)
@@ -219,3 +220,6 @@ target_link_libraries(leader_brain ${catkin_LIBRARIES})
 
 add_executable(chaser_brain src/senario2/chaser_brain.cpp src/senario2/chaser_main.cpp)
 target_link_libraries(chaser_brain ${catkin_LIBRARIES})
+
+add_executable(multi_drive src/senario3/multi_drive.cpp)
+target_link_libraries(multi_drive ${catkin_LIBRARIES})

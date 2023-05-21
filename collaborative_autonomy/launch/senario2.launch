@@ -1,10 +1,6 @@
 <!-- 
   Scenario 2: Two turtlebots, one leading and the other chasing. Both running AMCL navigation off
   the same map
-  - Added SLAM for visualization issues with RViz
-  - To Improve:
-  - RViz not seeing Multimap? Also Rviz in general
-  - missing /odom?
 -->
 <launch>
   <!-- Arguments for this Launch File, defaults intended to be used -->

@@ -1,0 +1,12 @@
+<launch>
+  <arg name="cmd_vel" default="/cmd_vel"/>
+  <arg name="scan" default="/scan"/>
+  <arg name="odom" default="/odom"/>
+  <arg name="name" default="turtlebot3"/>
+
+  <param name="cmd_vel_topic_name" value="$(arg cmd_vel)"/>
+  <param name="scan_topic_name" value="$(arg scan)"/>
+  <param name="odom_topic_name" value="$(arg odom)"/>
+
+  <node name="$(arg name)" pkg="collaborative_autonomy" type="multi_drive" required="true" output="screen" launch-prefix="gnome-terminal --command" />
+</launch>
