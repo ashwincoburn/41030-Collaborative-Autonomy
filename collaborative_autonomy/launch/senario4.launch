@@ -45,7 +45,6 @@
   </group>
 
   <!-- Launch Navigation for Both TB3s -->
-  <!--
   <include file="$(find collaborative_autonomy)/launch/navigation/sen2_nav_v2.launch">
     <arg name="map_file" value="$(find collaborative_autonomy)/maps/map.yaml" />
     <arg name="first_tb3_x_pos" value="$(arg first_tb3_x_pos)"/>
@@ -53,7 +52,6 @@
     <arg name="second_tb3_x_pos" value="$(arg second_tb3_x_pos)"/>
     <arg name="second_tb3_y_pos" value="$(arg second_tb3_y_pos)"/>
   </include>
-  -->
 
   <!-- multi_map_merge.launch here and its arguments -->
   <include file="$(find collaborative_autonomy)/launch/gazebo/multi_map_merge_for_two.launch">

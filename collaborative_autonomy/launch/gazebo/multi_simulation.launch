@@ -2,7 +2,7 @@
   <arg name="cmd_vel" default="/cmd_vel"/>
   <arg name="scan" default="/scan"/>
   <arg name="odom" default="/odom"/>
-  <arg name="name" default="turtlebot3"/>
+  <arg name="name" default="multi_simulation"/>
 
   <param name="cmd_vel_topic_name" value="$(arg cmd_vel)"/>
   <param name="scan_topic_name" value="$(arg scan)"/>
