@@ -1,6 +1,5 @@
 <!-- 
-  Scenario 3: Two turtlebots, performing SLAM mapping both running a collision avoidance algorithm and running 
-  multi-map merge in the background
+  Scenario 4: House SLAM
 -->
 <launch>
   <!-- Arguments for this Launch File, defaults intended to be used -->
@@ -17,7 +16,7 @@
   <arg name="open_rviz" default="true"/>
 
   <!-- Launch Gazebo World and Spawn Both TB3s -->
-  <include file="$(find collaborative_autonomy)/launch/gazebo/sen3_multi_turtlebot3.launch">
+  <include file="$(find collaborative_autonomy)/launch/gazebo/sen5_multi_turtlebot3.launch">
     <arg name="first_tb3"  value="$(arg first_tb3)"/>
     <arg name="first_tb3_x_pos" value="$(arg first_tb3_x_pos)"/>
     <arg name="first_tb3_y_pos" value="$(arg first_tb3_y_pos)"/>
@@ -45,6 +44,7 @@
   </group>
 
   <!-- Launch Navigation for Both TB3s -->
+  <!--
   <include file="$(find collaborative_autonomy)/launch/navigation/sen2_nav_v2.launch">
     <arg name="map_file" value="$(find collaborative_autonomy)/maps/map.yaml" />
     <arg name="first_tb3_x_pos" value="$(arg first_tb3_x_pos)"/>
@@ -52,6 +52,7 @@
     <arg name="second_tb3_x_pos" value="$(arg second_tb3_x_pos)"/>
     <arg name="second_tb3_y_pos" value="$(arg second_tb3_y_pos)"/>
   </include>
+  -->
 
   <!-- multi_map_merge.launch here and its arguments -->
   <include file="$(find collaborative_autonomy)/launch/gazebo/multi_map_merge_for_two.launch">

@@ -1,0 +1,84 @@
+<!-- 
+  Scenario 3: Two turtlebots, performing SLAM mapping both running a collision avoidance algorithm and running 
+  multi-map merge in the background
+-->
+<launch>
+  <!-- Arguments for this Launch File, defaults intended to be used -->
+  <arg name="first_tb3"  default="tb3_leader"/>
+  <arg name="first_tb3_x_pos" default="1.0"/>
+  <arg name="first_tb3_y_pos" default="-2.0"/>
+  <arg name="first_tb3_yaw"   default="1.57079"/> <!-- Facing 90 degs, or left -->
+
+  <arg name="second_tb3" default="tb3_chaser"/>
+  <arg name="second_tb3_x_pos" default="1.0"/>
+  <arg name="second_tb3_y_pos" default="3.0"/>
+  <arg name="second_tb3_yaw"   default="1.57079"/> <!-- Facing 270 degs, or right -->
+
+  <arg name="open_rviz" default="true"/>
+
+  <!-- Launch Gazebo World and Spawn Both TB3s -->
+  <include file="$(find collaborative_autonomy)/launch/gazebo/sen3_multi_turtlebot3.launch">
+    <arg name="first_tb3"  value="$(arg first_tb3)"/>
+    <arg name="first_tb3_x_pos" value="$(arg first_tb3_x_pos)"/>
+    <arg name="first_tb3_y_pos" value="$(arg first_tb3_y_pos)"/>
+    <arg name="first_tb3_yaw"   value="$(arg first_tb3_yaw)"/>
+    <arg name="second_tb3"  value="$(arg second_tb3)"/>
+    <arg name="second_tb3_x_pos" value="$(arg second_tb3_x_pos)"/>
+    <arg name="second_tb3_y_pos" value="$(arg second_tb3_y_pos)"/>
+    <arg name="second_tb3_yaw"   value="$(arg second_tb3_yaw)"/>
+  </include>
+    
+  <!-- Launch SLAM for Both TB3s -->
+  <!--
+  <group ns="$(arg first_tb3)">
+    <include file="$(find turtlebot3_slam)/launch/turtlebot3_gmapping.launch">
+        <arg name="set_base_frame" value="$(arg first_tb3)/base_footprint"/>
+        <arg name="set_odom_frame" value="$(arg first_tb3)/odom"/>
+        <arg name="set_map_frame"  value="$(arg first_tb3)/map"/>
+    </include>
+  </group>
+  <group ns="$(arg second_tb3)">
+    <include file="$(find turtlebot3_slam)/launch/turtlebot3_gmapping.launch">
+        <arg name="set_base_frame" value="$(arg second_tb3)/base_footprint"/>
+        <arg name="set_odom_frame" value="$(arg second_tb3)/odom"/>
+        <arg name="set_map_frame"  value="$(arg second_tb3)/map"/>
+    </include>
+  </group>
+  -->
+
+  <!-- Launch Navigation for Both TB3s -->
+  <include file="$(find collaborative_autonomy)/launch/navigation/sen2_nav_v2.launch">
+    <arg name="map_file" value="$(find collaborative_autonomy)/maps/tb3_house.yaml" />
+    <arg name="first_tb3_x_pos" value="$(arg first_tb3_x_pos)"/>
+    <arg name="first_tb3_y_pos" value="$(arg first_tb3_y_pos)"/>
+    <arg name="first_tb3_a_pos" value="$(arg first_tb3_yaw)"/>
+    <arg name="second_tb3_x_pos" value="$(arg second_tb3_x_pos)"/>
+    <arg name="second_tb3_y_pos" value="$(arg second_tb3_y_pos)"/>
+    <arg name="second_tb3_a_pos" value="$(arg second_tb3_yaw)"/>
+  </include>
+
+  <!-- multi_map_merge.launch here and its arguments -->
+  <include file="$(find collaborative_autonomy)/launch/gazebo/multi_map_merge_for_two.launch">
+    <arg name="first_tb3"  value="$(arg first_tb3)"/>
+    <arg name="second_tb3" value="$(arg second_tb3)"/>
+    <arg name="first_tb3_x_pos" value="$(arg first_tb3_x_pos)"/>
+    <arg name="first_tb3_y_pos" value="$(arg first_tb3_y_pos)"/>
+    <arg name="first_tb3_yaw"   value="$(arg first_tb3_yaw)"/>
+    <arg name="second_tb3_x_pos" value="$(arg second_tb3_x_pos)"/>
+    <arg name="second_tb3_y_pos" value="$(arg second_tb3_y_pos)"/>
+    <arg name="second_tb3_yaw"   value="$(arg second_tb3_yaw)"/>
+  </include>
+
+  <!-- RViz -->
+  <group if="$(arg open_rviz)"> 
+    <node pkg="rviz" type="rviz" name="rviz" required="true"
+          args="-d $(find collaborative_autonomy)/rviz/senario3.rviz"/>
+  </group>
+
+  <!-- Launch LEADER Node (Four-points Repeating) for Single TB3 [Same as rosrun] [Seperate Terminal] -->
+  <node name="tb3house_leader_brain" pkg="collaborative_autonomy"  type="tb3house_leader_brain" output="screen" launch-prefix="gnome-terminal --command"/>
+
+  <!-- Launch CHASER Node (Chase leader) for Single TB3 [Same as rosrun] [Seperate Terminal] -->
+  <node name="chaser_brain" pkg="collaborative_autonomy"  type="chaser_brain" output="screen" launch-prefix="gnome-terminal --command"/>
+
+</launch>

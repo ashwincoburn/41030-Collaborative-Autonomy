@@ -22,7 +22,7 @@ using namespace std;
 
 Chaser_Brain::Chaser_Brain(ros::NodeHandle nh) : 
 nh_(nh), ac_("tb3_chaser/move_base", true), headerSequencer_(0), runLoop_(true), dataCollected_(false), 
-robotsDistTolerance_(0.75), robotsDistance_(100.0), allowCollectData_(true)
+robotsDistTolerance_(0.90), robotsDistance_(100.0), allowCollectData_(true)
 {
   /* Wait for the action server to come up */
   while (!ac_.waitForServer(ros::Duration(5.0)))
