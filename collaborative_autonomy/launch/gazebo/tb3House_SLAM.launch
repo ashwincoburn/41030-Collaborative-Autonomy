@@ -47,4 +47,9 @@
     </include>
 -->
 
+<!-- Launch Random Drive for Single TB3 [Same as rosrun] [Seperate Terminal] -->
+  <include file="$(find turtlebot3_gazebo)/launch/turtlebot3_simulation.launch">
+      <arg name="cmd_vel"  value="/cmd_vel"/>
+  </include>
+
 </launch>

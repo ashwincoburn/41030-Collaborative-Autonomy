@@ -4,14 +4,14 @@
 <launch>
   <!-- Arguments for this Launch File, defaults intended to be used -->
   <arg name="first_tb3"  default="tb3_leader"/>
-  <arg name="first_tb3_x_pos" default="1.0"/>
-  <arg name="first_tb3_y_pos" default="-2.0"/>
-  <arg name="first_tb3_yaw"   default="1.57079"/> <!-- Facing 90 degs, or left -->
+  <arg name="first_tb3_x_pos" default="1.3"/>
+  <arg name="first_tb3_y_pos" default="0.7"/>
+  <arg name="first_tb3_yaw"   default="0"/> <!-- Facing 90 degs, or left -->
 
   <arg name="second_tb3" default="tb3_chaser"/>
   <arg name="second_tb3_x_pos" default="1.0"/>
-  <arg name="second_tb3_y_pos" default="3.0"/>
-  <arg name="second_tb3_yaw"   default="1.57079"/> <!-- Facing 270 degs, or right -->
+  <arg name="second_tb3_y_pos" default="1.0"/>
+  <arg name="second_tb3_yaw"   default="0"/> <!-- Facing 270 degs, or right -->
 
   <arg name="open_rviz" default="true"/>
 
@@ -47,7 +47,7 @@
 
   <!-- Launch Navigation for Both TB3s -->
   <include file="$(find collaborative_autonomy)/launch/navigation/sen2_nav_v2.launch">
-    <arg name="map_file" value="$(find collaborative_autonomy)/maps/tb3_house.yaml" />
+    <arg name="map_file" value="$(find collaborative_autonomy)/maps/house.yaml" />
     <arg name="first_tb3_x_pos" value="$(arg first_tb3_x_pos)"/>
     <arg name="first_tb3_y_pos" value="$(arg first_tb3_y_pos)"/>
     <arg name="first_tb3_a_pos" value="$(arg first_tb3_yaw)"/>
@@ -75,7 +75,7 @@
   </group>
 
   <!-- Launch LEADER Node (Four-points Repeating) for Single TB3 [Same as rosrun] [Seperate Terminal] -->
-  <node name="tb3house_leader_brain" pkg="collaborative_autonomy"  type="tb3house_leader_brain" output="screen" launch-prefix="gnome-terminal --command"/>
+  <node name="house_leader_brain" pkg="collaborative_autonomy"  type="house_leader_brain" output="screen" launch-prefix="gnome-terminal --command"/>
 
   <!-- Launch CHASER Node (Chase leader) for Single TB3 [Same as rosrun] [Seperate Terminal] -->
   <node name="chaser_brain" pkg="collaborative_autonomy"  type="chaser_brain" output="screen" launch-prefix="gnome-terminal --command"/>

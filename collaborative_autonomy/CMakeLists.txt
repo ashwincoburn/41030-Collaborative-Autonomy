@@ -227,3 +227,6 @@ target_link_libraries(chaser_brain ${catkin_LIBRARIES})
 
 add_executable(tb3house_leader_brain src/senario4tb3house/tb3house_leader_brain.cpp)
 target_link_libraries(tb3house_leader_brain ${catkin_LIBRARIES})
+
+add_executable(house_leader_brain src/senario6/house_leader_brain.cpp)
+target_link_libraries(house_leader_brain ${catkin_LIBRARIES})

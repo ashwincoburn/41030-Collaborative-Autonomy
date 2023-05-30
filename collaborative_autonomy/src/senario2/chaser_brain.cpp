@@ -51,9 +51,6 @@ void Chaser_Brain::leaderOdomCallback(const nav_msgs::Odometry::ConstPtr &msg) /
     Non-Blocking Function, designed to run once and fast when it's activated by new data
     Simply updates the current odom of LEADER
   */
-  // #ifdef DEBUG
-  // ROS_INFO_STREAM("[BRAIN] leaderOdom: (" << msg->pose.pose.position.x << "," << msg->pose.pose.position.y << ")");
-  // #endif
 
   if(allowCollectData_){
     {

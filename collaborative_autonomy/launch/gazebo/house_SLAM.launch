@@ -44,7 +44,14 @@
 <!-- We want a seperate terminal so use roslaunch turtlebot3_teleop turtlebot3_teleop_key.launch  
   <include file="$(find turtlebot3_teleop)/launch/turtlebot3_teleop_key.launch">
       <arg name="cmd_vel"  value="/cmd_vel"/>
-    </include>
+  </include>
 -->
+
+<!-- Launch Random Drive for Single TB3 [Same as rosrun] [Seperate Terminal] -->
+<!-- 
+  <include file="$(find turtlebot3_gazebo)/launch/turtlebot3_simulation.launch">
+      <arg name="cmd_vel"  value="/cmd_vel"/>
+  </include>
+  -->
 
 </launch>
